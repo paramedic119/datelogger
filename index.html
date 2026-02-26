@@ -459,7 +459,7 @@
         let wakeLock = null;
         let autoSendInterval = null;
         let lastSentIndex = 0;
-        const RECORD_RATE_MS = 20;
+        const RECORD_RATE_MS = 50;
         const AUTO_SEND_MS = 5000;
 
         const calibBtn = document.getElementById('calibBtn');
@@ -652,7 +652,7 @@
                 document.body.classList.add('recording');
                 currentHeading = 0; // Reset heading on recording start
                 startBtn.innerText = "停止"; startBtn.className = "action stop";
-                statusMessage.innerText = "📡 記録中 (50Hz高速サンプリング)"; statusMessage.style.color = "#fff";
+                statusMessage.innerText = "📡 記録中 (20Hzサンプリング)"; statusMessage.style.color = "#fff";
                 recordInterval = setInterval(recordData, RECORD_RATE_MS);
                 lastSentIndex = 0;
                 autoSendInterval = setInterval(() => sendToCloud(true), AUTO_SEND_MS);
