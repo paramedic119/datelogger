@@ -252,17 +252,110 @@
             height: 18px;
             vertical-align: middle;
         }
+
+        /* Profile Inputs */
+        .profile-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 15px 15px 15px;
+        }
+
+        .input-group {
+            background: var(--glass);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .input-group label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .input-group input {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            outline: none;
+        }
+
+        /* Recording Mode UI (Big Button) */
+        body.recording .dashboard {
+            grid-template-columns: repeat(3, 1fr);
+            padding: 10px;
+            gap: 8px;
+        }
+
+        body.recording .card {
+            padding: 6px;
+        }
+
+        body.recording .value {
+            font-size: 1rem;
+        }
+
+        body.recording .label {
+            font-size: 0.6rem;
+        }
+
+        body.recording .profile-inputs,
+        body.recording #statusMessage,
+        body.recording #calibBtn,
+        body.recording #exportBtn,
+        body.recording #cloudBtn,
+        body.recording .header h1,
+        body.recording .header .icon-btn {
+            display: none !important;
+        }
+
+        body.recording #startBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            z-index: 2000;
+            font-size: 0.7rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            padding: 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        body.recording #uncomfortableArea {
+            position: fixed;
+            top: 100px;
+            left: 15px;
+            right: 15px;
+            bottom: 120px;
+            margin: 0;
+            border-width: 4px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        body.recording #uncomfortableArea .touch-hint {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 
 <body>
     <div class="header">
-        <img src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/app_icon_ambulance_sensor_1772053937063.png"
-            style="width:32px; border-radius: 8px;">
+        <img src="app_icon_ambulance_sensor_1772053937063.png" style="width:32px; border-radius: 8px;"
+            onerror="this.src='https://placehold.co/32?text=App'">
         <h1>RIDE QUALITY LOGGER</h1>
-        <button class="icon-btn" onclick="openModal()"><img
-                src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/icon_manual_book_1772053955806.png"
-                style="width:24px;"></button>
+        <button class="icon-btn" onclick="openModal()"><img src="icon_manual_book_1772053955806.png" style="width:24px;"
+                onerror="this.src='https://placehold.co/24?text=Manual'"></button>
     </div>
 
     <div class="dashboard">
@@ -294,10 +387,20 @@
 
     <div id="statusMessage">車両を水平な場所に停車させ、水平セットを行ってください</div>
 
+    <div class="profile-inputs">
+        <div class="input-group">
+            <label>消防歴 (年)</label>
+            <input type="number" id="driverExp" placeholder="例: 10" min="0" max="50">
+        </div>
+        <div class="input-group">
+            <label>年齢 (歳)</label>
+            <input type="number" id="driverAge" placeholder="例: 35" min="18" max="70">
+        </div>
+    </div>
+
     <div class="controls">
-        <button id="calibBtn" class="action calib"><img
-                src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/icon_sensor_calibrate_1772053987713.png"
-                class="img-icon"> [Calibrate] 水平セット</button>
+        <button id="calibBtn" class="action calib"><img src="icon_sensor_calibrate_1772053987713.png" class="img-icon"
+                onerror="this.style.display='none'"> [Calibrate] 水平セット</button>
         <button id="startBtn" class="action start">記録開始</button>
         <button id="exportBtn" class="action export">CSV出力</button>
         <button id="cloudBtn" class="action cloud"
@@ -364,6 +467,9 @@
         const exportBtn = document.getElementById('exportBtn');
         const cloudBtn = document.getElementById('cloudBtn');
         const uncomfortableArea = document.getElementById('uncomfortableArea');
+        const driverExpInput = document.getElementById('driverExp');
+        const driverAgeInput = document.getElementById('driverAge');
+
         const gValueEl = document.getElementById('gValue');
         const yawValueEl = document.getElementById('yawValue');
         const jerkValueEl = document.getElementById('jerkValue');
@@ -371,6 +477,16 @@
         const speedValueEl = document.getElementById('speedValue');
         const logCountEl = document.getElementById('logCount');
         const statusMessage = document.getElementById('statusMessage');
+
+        // Load profile from localStorage
+        window.addEventListener('load', () => {
+            driverExpInput.value = localStorage.getItem('driverExp') || '';
+            driverAgeInput.value = localStorage.getItem('driverAge') || '';
+        });
+
+        // Save profile on change
+        driverExpInput.addEventListener('change', () => localStorage.setItem('driverExp', driverExpInput.value));
+        driverAgeInput.addEventListener('change', () => localStorage.setItem('driverAge', driverAgeInput.value));
 
         // Heading integration
         let lastMotionTime = Date.now();
@@ -434,24 +550,26 @@
         function handleMotion(e) {
             const now = Date.now();
             const dt = (now - lastMotionTime) / 1000;
+            if (dt <= 0) return; // Prevent division by zero
             lastMotionTime = now;
 
             rawX = ((e.accelerationIncludingGravity.x || 0) / 9.8) - offsetX;
             rawY = ((e.accelerationIncludingGravity.y || 0) / 9.8) - offsetY;
-            rawZ = ((e.accelerationIncludingGravity.z || 0) / 9.8) - offsetZ - 1.0;
+            rawZ = ((e.accelerationIncludingGravity.z || 0) / 9.8) - (offsetZ + 1.0);
             yawRate = (e.rotationRate.alpha || 0) * (Math.PI / 180);
             pitchRate = (e.rotationRate.beta || 0) * (Math.PI / 180);
             rollRate = (e.rotationRate.gamma || 0) * (Math.PI / 180);
 
-            // Integrate yaw for heading (relative to calibration)
+            // Integrate yaw for heading (relative to calibration or record start)
             currentHeading += yawRate * dt;
 
-            if (!isRecording) {
-                const compositeG = Math.sqrt(rawX ** 2 + rawY ** 2);
-                gValueEl.innerText = compositeG.toFixed(2);
-                yawValueEl.innerText = (currentHeading * 180 / Math.PI).toFixed(1);
-                zValueEl.innerText = rawZ.toFixed(2);
-            }
+            // Update UI
+            const compositeG = Math.sqrt(rawX ** 2 + rawY ** 2);
+            gValueEl.innerText = compositeG.toFixed(2);
+            yawValueEl.innerText = (currentHeading * 180 / Math.PI).toFixed(1);
+            zValueEl.innerText = rawZ.toFixed(2);
+
+            // Speed update from GPS is handled in handlePosition
         }
 
         function handlePosition(position) {
@@ -484,7 +602,8 @@
                 rawG_X: rawX.toFixed(4), rawG_Y: rawY.toFixed(4), rawG_Z: rawZ.toFixed(4),
                 jerk_X: jerkX.toFixed(4), jerk_Y: jerkY.toFixed(4), jerk_Z: jerkZ.toFixed(4),
                 yaw_rad: currentHeading.toFixed(4), pitch_rad: pitchRate.toFixed(4), roll_rad: rollRate.toFixed(4),
-                lat: currentGps.lat.toFixed(6), lon: currentGps.lon.toFixed(6), speed_kmh: currentGps.speed.toFixed(1)
+                lat: currentGps.lat.toFixed(6), lon: currentGps.lon.toFixed(6), speed_kmh: currentGps.speed.toFixed(1),
+                exp: driverExpInput.value || 0, age: driverAgeInput.value || 0
             });
 
             lastX = rawX; lastY = rawY; lastZ = rawZ;
@@ -522,12 +641,17 @@
                 if (!await requestPermissions()) return;
                 logData = []; logCountEl.innerText = "0";
                 exportBtn.style.display = 'none'; calibBtn.style.display = 'none';
-                window.addEventListener('devicemotion', handleMotion);
+
+                // Note: devicemotion listener is already added globally, 
+                // we just start interval for data recording
+
                 if (navigator.geolocation) {
-                    watchId = navigator.geolocation.watchPosition(handlePosition, null, { enableHighAccuracy: true });
+                    watchId = navigator.geolocation.watchPosition(handlePosition, (err) => console.error(err), { enableHighAccuracy: true });
                 }
                 isRecording = true;
-                startBtn.innerText = "記録停止"; startBtn.className = "action stop";
+                document.body.classList.add('recording');
+                currentHeading = 0; // Reset heading on recording start
+                startBtn.innerText = "停止"; startBtn.className = "action stop";
                 statusMessage.innerText = "📡 記録中 (50Hz高速サンプリング)"; statusMessage.style.color = "#fff";
                 recordInterval = setInterval(recordData, RECORD_RATE_MS);
                 lastSentIndex = 0;
@@ -535,7 +659,8 @@
                 await requestWakeLock();
             } else {
                 isRecording = false;
-                window.removeEventListener('devicemotion', handleMotion);
+                document.body.classList.remove('recording');
+                // do NOT remove handleMotion global listener to keep UI alive
                 if (watchId !== null) navigator.geolocation.clearWatch(watchId);
                 clearInterval(recordInterval);
                 clearInterval(autoSendInterval);
