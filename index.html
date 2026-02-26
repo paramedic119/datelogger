@@ -354,7 +354,10 @@
         let recordInterval = null;
         let watchId = null;
         let wakeLock = null;
+        let autoSendInterval = null;
+        let lastSentIndex = 0;
         const RECORD_RATE_MS = 20;
+        const AUTO_SEND_MS = 5000;
 
         const calibBtn = document.getElementById('calibBtn');
         const startBtn = document.getElementById('startBtn');
@@ -527,12 +530,15 @@
                 startBtn.innerText = "記録停止"; startBtn.className = "action stop";
                 statusMessage.innerText = "📡 記録中 (50Hz高速サンプリング)"; statusMessage.style.color = "#fff";
                 recordInterval = setInterval(recordData, RECORD_RATE_MS);
+                lastSentIndex = 0;
+                autoSendInterval = setInterval(() => sendToCloud(true), AUTO_SEND_MS);
                 await requestWakeLock();
             } else {
                 isRecording = false;
                 window.removeEventListener('devicemotion', handleMotion);
                 if (watchId !== null) navigator.geolocation.clearWatch(watchId);
                 clearInterval(recordInterval);
+                clearInterval(autoSendInterval);
                 startBtn.innerText = "記録開始"; startBtn.className = "action start";
                 statusMessage.innerText = "🏁 記録完了";
                 exportBtn.style.display = 'inline-block'; calibBtn.style.display = 'inline-block';
@@ -541,29 +547,43 @@
             }
         }
 
-        async function sendToCloud() {
+        async function sendToCloud(isAuto = false) {
             const gasUrl = "https://script.google.com/macros/s/AKfycbzdMTc8l3Fet-S1-0YNZALuGPvKUXaupTW1odqJnBNrPl-zsxWX2uFhQ0hdzd0rSZBxYg/exec";
-            if (logData.length === 0) return;
 
-            statusMessage.innerText = "☁️ クラウドへ送信中...";
-            cloudBtn.disabled = true;
+            // Get new data to send
+            const dataToSend = logData.slice(lastSentIndex);
+            if (dataToSend.length === 0) return;
+
+            if (!isAuto) {
+                statusMessage.innerText = "☁️ クラウドへ送信中...";
+                cloudBtn.disabled = true;
+            } else {
+                console.log(`Auto-sending ${dataToSend.length} points...`);
+            }
 
             try {
                 const response = await fetch(gasUrl, {
                     method: 'POST',
-                    mode: 'no-cors', // GAS allows no-cors for simple posts
+                    mode: 'no-cors',
                     cache: 'no-cache',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(logData)
+                    body: JSON.stringify(dataToSend)
                 });
-                statusMessage.innerText = "✅ クラウド送信完了";
-                statusMessage.style.color = "#4caf50";
-                cloudBtn.style.display = 'none'; // Hide after success
+
+                lastSentIndex = logData.length; // Update last sent pointer
+
+                if (!isAuto) {
+                    statusMessage.innerText = "✅ クラウド送信完了";
+                    statusMessage.style.color = "#4caf50";
+                    cloudBtn.style.display = 'none';
+                }
             } catch (e) {
-                console.error(e);
-                statusMessage.innerText = "❌ 送信失敗: " + e.message;
-                statusMessage.style.color = "#f44336";
-                cloudBtn.disabled = false;
+                console.error("Cloud send error:", e);
+                if (!isAuto) {
+                    statusMessage.innerText = "❌ 送信失敗: " + e.message;
+                    statusMessage.style.color = "#f44336";
+                    cloudBtn.disabled = false;
+                }
             }
         }
 
