@@ -555,6 +555,16 @@
 
         async function startCalibration() {
             if (!await requestPermissions()) { statusMessage.innerText = "❌ センサー権限がありません"; return; }
+
+            // Request GPS permission early to avoid prompt during recording start
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { handlePosition(pos); console.log("GPS Permission granted and position obtained."); },
+                    (err) => { console.error("GPS Permission error:", err); },
+                    { enableHighAccuracy: true }
+                );
+            }
+
             isCalibrating = true;
             let cX = [], cY = [], cZ = [];
             statusMessage.innerText = "⏳ 調整中... 端末を動かさないでください";
