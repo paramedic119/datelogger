@@ -461,7 +461,8 @@
         let currentGps = { lat: 0, lon: 0, speed: 0 };
         let offsetX = 0, offsetY = 0, offsetZ = 0, offsetYaw = 0;
         let smoothX = 0, smoothY = 0;
-        const LPF_ALPHA = 0.2; // Display smoothing
+        const LPF_ALPHA = 0.025; // 40 samples smoothing (1/40)
+        let trailPoints = []; // Last 0.5s trail (10 samples)
         let isCalibrating = false;
         let recordInterval = null;
         let watchId = null;
@@ -553,6 +554,7 @@
                     offsetZ = (cZ.reduce((a, b) => a + b) / cZ.length) - 1.0;
                     currentHeading = 0; // Reset heading on calibration
                     smoothX = 0; smoothY = 0; // Reset display smoothing
+                    trailPoints = []; // Reset trail
                     statusMessage.innerText = "✅ 水平・方位セット完了"; statusMessage.style.color = "#4caf50";
                 }
                 calibBtn.disabled = false; startBtn.disabled = false;
@@ -575,6 +577,10 @@
             // Update Smooth Values for Display (LPF)
             smoothX = LPF_ALPHA * rawX + (1 - LPF_ALPHA) * smoothX;
             smoothY = LPF_ALPHA * rawY + (1 - LPF_ALPHA) * smoothY;
+
+            // Manage Trail Points (Max 10 for 0.5s at 20Hz)
+            trailPoints.push({ x: smoothX, y: smoothY });
+            if (trailPoints.length > 10) trailPoints.shift();
 
             // Update UI
             drawBowl(smoothX, smoothY);
@@ -603,6 +609,20 @@
             bowlCtx.moveTo(0, center); bowlCtx.lineTo(size, center);
             bowlCtx.moveTo(center, 0); bowlCtx.lineTo(center, size);
             bowlCtx.stroke();
+
+            // Draw Trail (0.5s history)
+            if (trailPoints.length > 1) {
+                bowlCtx.beginPath();
+                bowlCtx.strokeStyle = 'rgba(79, 195, 247, 0.3)';
+                bowlCtx.lineWidth = 2;
+                trailPoints.forEach((p, i) => {
+                    const tx = center + (p.x * scale);
+                    const ty = center - (p.y * scale);
+                    if (i === 0) bowlCtx.moveTo(tx, ty);
+                    else bowlCtx.lineTo(tx, ty);
+                });
+                bowlCtx.stroke();
+            }
 
             // Draw current G point
             const dotX = center + (x * scale);
@@ -653,6 +673,10 @@
             // Update Smooth Values for Display (LPF)
             smoothX = LPF_ALPHA * rawX + (1 - LPF_ALPHA) * smoothX;
             smoothY = LPF_ALPHA * rawY + (1 - LPF_ALPHA) * smoothY;
+
+            // Manage Trail Points
+            trailPoints.push({ x: smoothX, y: smoothY });
+            if (trailPoints.length > 10) trailPoints.shift();
 
             drawBowl(smoothX, smoothY);
             speedValueEl.innerText = currentGps.speed.toFixed(1);
