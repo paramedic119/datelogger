@@ -661,24 +661,13 @@
         function recordData() {
             if (!isRecording) return;
             const ts = Date.now();
-            const compositeG = Math.sqrt(rawX ** 2 + rawY ** 2);
 
             // Calculate Jerk (dt is RECORD_RATE_MS)
             const dtSec = RECORD_RATE_MS / 1000;
             jerkX = (rawX - lastX) / dtSec;
             jerkY = (rawY - lastY) / dtSec;
             jerkZ = (rawZ - lastZ) / dtSec;
-            const compositeJerk = Math.sqrt(jerkX ** 2 + jerkY ** 2);
 
-            // Update Smooth Values for Display (LPF)
-            smoothX = LPF_ALPHA * rawX + (1 - LPF_ALPHA) * smoothX;
-            smoothY = LPF_ALPHA * rawY + (1 - LPF_ALPHA) * smoothY;
-
-            // Manage Trail Points
-            trailPoints.push({ x: smoothX, y: smoothY });
-            if (trailPoints.length > 10) trailPoints.shift();
-
-            drawBowl(smoothX, smoothY);
             speedValueEl.innerText = currentGps.speed.toFixed(1);
 
             logData.push({
