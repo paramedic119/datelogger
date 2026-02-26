@@ -300,6 +300,8 @@
                 class="img-icon"> [Calibrate] 水平セット</button>
         <button id="startBtn" class="action start">記録開始</button>
         <button id="exportBtn" class="action export">CSV出力</button>
+        <button id="cloudBtn" class="action cloud"
+            style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; display: none;">クラウド送信</button>
     </div>
 
     <div id="uncomfortableArea">
@@ -356,6 +358,7 @@
         const calibBtn = document.getElementById('calibBtn');
         const startBtn = document.getElementById('startBtn');
         const exportBtn = document.getElementById('exportBtn');
+        const cloudBtn = document.getElementById('cloudBtn');
         const uncomfortableArea = document.getElementById('uncomfortableArea');
         const gValueEl = document.getElementById('gValue');
         const yawValueEl = document.getElementById('yawValue');
@@ -505,6 +508,33 @@
                 startBtn.innerText = "記録開始"; startBtn.className = "action start";
                 statusMessage.innerText = "🏁 記録完了";
                 exportBtn.style.display = 'inline-block'; calibBtn.style.display = 'inline-block';
+                cloudBtn.style.display = 'inline-block';
+            }
+        }
+
+        async function sendToCloud() {
+            const gasUrl = "https://script.google.com/macros/s/AKfycbzdMTc8l3Fet-S1-0YNZALuGPvKUXaupTW1odqJnBNrPl-zsxWX2uFhQ0hdzd0rSZBxYg/exec";
+            if (logData.length === 0) return;
+
+            statusMessage.innerText = "☁️ クラウドへ送信中...";
+            cloudBtn.disabled = true;
+
+            try {
+                const response = await fetch(gasUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', // GAS allows no-cors for simple posts
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(logData)
+                });
+                statusMessage.innerText = "✅ クラウド送信完了";
+                statusMessage.style.color = "#4caf50";
+                cloudBtn.style.display = 'none'; // Hide after success
+            } catch (e) {
+                console.error(e);
+                statusMessage.innerText = "❌ 送信失敗: " + e.message;
+                statusMessage.style.color = "#f44336";
+                cloudBtn.disabled = false;
             }
         }
 
@@ -521,6 +551,7 @@
         calibBtn.addEventListener('click', startCalibration);
         startBtn.addEventListener('click', toggleRecording);
         exportBtn.addEventListener('click', exportCSV);
+        cloudBtn.addEventListener('click', sendToCloud);
         window.addEventListener('devicemotion', handleMotion); 
     </script>
 </body>
