@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -38,7 +39,13 @@
             align-items: center;
         }
 
-        h1 { font-size: 1.1rem; margin: 0; color: var(--primary); letter-spacing: 1px; font-weight: 700; }
+        h1 {
+            font-size: 1.1rem;
+            margin: 0;
+            color: var(--primary);
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
 
         .icon-btn {
             background: none;
@@ -50,7 +57,11 @@
             filter: brightness(0) invert(1);
             opacity: 0.7;
         }
-        .icon-btn:active { opacity: 1; transform: scale(0.9); }
+
+        .icon-btn:active {
+            opacity: 1;
+            transform: scale(0.9);
+        }
 
         .dashboard {
             display: grid;
@@ -69,8 +80,19 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .value { font-size: 1.3rem; font-weight: 800; margin-top: 4px; color: #fff; }
-        .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-top: 4px;
+            color: #fff;
+        }
+
+        .label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         .controls {
             display: grid;
@@ -93,10 +115,28 @@
             gap: 8px;
         }
 
-        #calibBtn { background: var(--glass); color: #fff; border: 1px solid var(--glass-border); grid-column: span 2; }
-        #startBtn.start { background: linear-gradient(135deg, #0288d1, #00acc1); color: white; }
-        #startBtn.stop { background: linear-gradient(135deg, #e11d48, #be123c); color: white; }
-        #exportBtn { background: linear-gradient(135deg, #059669, #10b981); color: white; display: none; }
+        #calibBtn {
+            background: var(--glass);
+            color: #fff;
+            border: 1px solid var(--glass-border);
+            grid-column: span 2;
+        }
+
+        #startBtn.start {
+            background: linear-gradient(135deg, #0288d1, #00acc1);
+            color: white;
+        }
+
+        #startBtn.stop {
+            background: linear-gradient(135deg, #e11d48, #be123c);
+            color: white;
+        }
+
+        #exportBtn {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            display: none;
+        }
 
         #statusMessage {
             text-align: center;
@@ -121,8 +161,16 @@
             touch-action: none;
         }
 
-        .touch-hint { font-size: 1.1rem; color: #94a3b8; }
-        .touch-sub { font-size: 0.75rem; color: #64748b; margin-top: 8px; }
+        .touch-hint {
+            font-size: 1.1rem;
+            color: #94a3b8;
+        }
+
+        .touch-sub {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
 
         #uncomfortableArea.active {
             background: rgba(244, 67, 54, 0.2);
@@ -130,20 +178,31 @@
             box-shadow: inset 0 0 20px rgba(244, 67, 54, 0.3);
             transform: scale(0.98);
         }
-        #uncomfortableArea.active .touch-hint { color: #fff; font-weight: bold; }
-        #uncomfortableArea.active .touch-sub { color: rgba(255, 255, 255, 0.7); }
+
+        #uncomfortableArea.active .touch-hint {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #uncomfortableArea.active .touch-sub {
+            color: rgba(255, 255, 255, 0.7);
+        }
 
         /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(5px);
             z-index: 1000;
             padding: 20px;
             box-sizing: border-box;
         }
+
         .modal-content {
             background: #1e293b;
             border-radius: 20px;
@@ -154,42 +213,95 @@
             border: 1px solid var(--glass-border);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
         }
-        .modal-header { color: var(--primary); font-weight: bold; font-size: 1.2rem; margin-bottom: 16px; }
-        .modal-body { font-size: 0.85rem; line-height: 1.6; color: #cbd5e1; }
-        .modal-body h3 { font-size: 1rem; color: #fff; margin-top: 1.5rem; }
-        .modal-close {
-            position: sticky; bottom: 0; width: 100%;
-            background: var(--primary); color: #0f172a;
-            border: none; padding: 12px; border-radius: 12px;
-            font-weight: bold; margin-top: 20px; cursor: pointer;
+
+        .modal-header {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
         }
 
-        .img-icon { width: 18px; height: 18px; vertical-align: middle; }
+        .modal-body {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .modal-body h3 {
+            font-size: 1rem;
+            color: #fff;
+            margin-top: 1.5rem;
+        }
+
+        .modal-close {
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .img-icon {
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+        }
     </style>
 </head>
+
 <body>
     <div class="header">
-        <img src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/app_icon_ambulance_sensor_1772053937063.png" style="width:32px; border-radius: 8px;">
+        <img src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/app_icon_ambulance_sensor_1772053937063.png"
+            style="width:32px; border-radius: 8px;">
         <h1>RIDE QUALITY LOGGER</h1>
-        <button class="icon-btn" onclick="openModal()"><img src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/icon_manual_book_1772053955806.png" style="width:24px;"></button>
+        <button class="icon-btn" onclick="openModal()"><img
+                src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/icon_manual_book_1772053955806.png"
+                style="width:24px;"></button>
     </div>
-    
+
     <div class="dashboard">
-        <div class="card"><div class="label">Composite G (XY)</div><div id="gValue" class="value">0.00</div></div>
-        <div class="card"><div class="label">Rotation (Yaw)</div><div id="yawValue" class="value">0.00</div></div>
-        <div class="card"><div class="label">Speed (km/h)</div><div id="speedValue" class="value">0.0</div></div>
-        <div class="card"><div class="label">Vertical G (Z)</div><div id="zValue" class="value">0.00</div></div>
-        <div class="card" style="grid-column: span 2;"><div class="label">Total Samples Recorded</div><div id="logCount" class="value">0</div></div>
+        <div class="card">
+            <div class="label">Composite G (XY)</div>
+            <div id="gValue" class="value">0.00</div>
+        </div>
+        <div class="card">
+            <div class="label">Composite Jerk</div>
+            <div id="jerkValue" class="value">0.00</div>
+        </div>
+        <div class="card">
+            <div class="label">Rotation (Yaw)</div>
+            <div id="yawValue" class="value">0.00</div>
+        </div>
+        <div class="card">
+            <div class="label">Speed (km/h)</div>
+            <div id="speedValue" class="value">0.0</div>
+        </div>
+        <div class="card">
+            <div class="label">Vertical G (Z)</div>
+            <div id="zValue" class="value">0.00</div>
+        </div>
+        <div class="card">
+            <div class="label">Total Samples</div>
+            <div id="logCount" class="value">0</div>
+        </div>
     </div>
-    
+
     <div id="statusMessage">車両を水平な場所に停車させ、水平セットを行ってください</div>
-    
+
     <div class="controls">
-        <button id="calibBtn" class="action calib"><img src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/icon_sensor_calibrate_1772053987713.png" class="img-icon"> [Calibrate] 水平セット</button>
+        <button id="calibBtn" class="action calib"><img
+                src="/home/mihara/.gemini/antigravity/brain/c62eeb19-ef22-4d43-9982-abfaa74b58aa/icon_sensor_calibrate_1772053987713.png"
+                class="img-icon"> [Calibrate] 水平セット</button>
         <button id="startBtn" class="action start">記録開始</button>
         <button id="exportBtn" class="action export">CSV出力</button>
     </div>
-    
+
     <div id="uncomfortableArea">
         <div class="touch-hint">不快感を入力</div>
         <div class="touch-sub">不快な揺れを感じている間、<br>ここを押し続けてください</div>
@@ -201,7 +313,8 @@
             <div class="modal-header">実証実験について</div>
             <div class="modal-body">
                 <h3>1. 本実験の目的</h3>
-                <p>現在、機関員の運転技術や「滑らかさ」の評価は、個人の感覚や経験則に大きく依存しています。本実験は、専用の計測アプリを用いて車両の「加速度（G）」と「加加速度（躍度・衝撃）」を記録し、同時に傷病者役が感じる「不快感」のデータを同期させることで、当機関独自の客観的な安全運転基準（エビデンス）を確立することを目的とします。</p>
+                <p>現在、機関員の運転技術や「滑らかさ」の評価は、個人の感覚や経験則に大きく依存しています。本実験は、専用の計測アプリを用いて車両の「加速度（G）」と「加加速度（躍度・衝撃）」を記録し、同時に傷病者役が感じる「不快感」のデータを同期させることで、当機関独自の客観的な安全運転基準（エビデンス）を確立することを目的とします。
+                </p>
 
                 <h3>2. 実験の概要</h3>
                 <ul>
@@ -211,7 +324,8 @@
                 </ul>
 
                 <h3>3. 被験者（傷病者役）へのお願い</h3>
-                <p>予測の排除のため、アイマスクと耳栓を着用していただきます。「体がズレる感覚」「カックンという衝撃」などを少しでも感じたら、収まるまで画面に触れ続けてください。実際の傷病者を想定し、厳しく判定を行ってください。</p>
+                <p>予測の排除のため、アイマスクと耳栓を着用していただきます。「体がズレる感覚」「カックンという衝撃」などを少しでも感じたら、収まるまで画面に触れ続けてください。実際の傷病者を想定し、厳しく判定を行ってください。
+                </p>
 
                 <h3>4. 機関員（運転手）へのお願い</h3>
                 <p>日常業務で行っている「安全かつ迅速な搬送」の感覚で走行してください。本実験は個人の運転技術を採点するものではなく、境界線（閾値）を探るためのものです。</p>
@@ -224,94 +338,111 @@
     </div>
 
     <script>
-        let isRecording = false; 
-        let isUncomfortable = false; 
+        let isRecording = false;
+        let isUncomfortable = false;
         let logData = [];
         let rawX = 0, rawY = 0, rawZ = 0;
+        let lastX = 0, lastY = 0, lastZ = 0;
+        let jerkX = 0, jerkY = 0, jerkZ = 0;
         let yawRate = 0, pitchRate = 0, rollRate = 0;
+        let currentHeading = 0;
         let currentGps = { lat: 0, lon: 0, speed: 0 };
-        let offsetX = 0, offsetY = 0, offsetZ = 0;
-        let isCalibrating = false; 
+        let offsetX = 0, offsetY = 0, offsetZ = 0, offsetYaw = 0;
+        let isCalibrating = false;
         let recordInterval = null;
         let watchId = null;
         const RECORD_RATE_MS = 20;
 
-        const calibBtn = document.getElementById('calibBtn'); 
+        const calibBtn = document.getElementById('calibBtn');
         const startBtn = document.getElementById('startBtn');
-        const exportBtn = document.getElementById('exportBtn'); 
+        const exportBtn = document.getElementById('exportBtn');
         const uncomfortableArea = document.getElementById('uncomfortableArea');
-        const gValueEl = document.getElementById('gValue'); 
+        const gValueEl = document.getElementById('gValue');
         const yawValueEl = document.getElementById('yawValue');
+        const jerkValueEl = document.getElementById('jerkValue');
         const zValueEl = document.getElementById('zValue');
         const speedValueEl = document.getElementById('speedValue');
         const logCountEl = document.getElementById('logCount');
         const statusMessage = document.getElementById('statusMessage');
+
+        // Heading integration
+        let lastMotionTime = Date.now();
 
         function openModal() { document.getElementById('manualModal').style.display = 'block'; }
         function closeModal() { document.getElementById('manualModal').style.display = 'none'; }
 
         function setUncomfortable(state) {
             isUncomfortable = state;
-            if(state) { 
-                uncomfortableArea.classList.add('active'); 
-                uncomfortableArea.querySelector('.touch-hint').innerHTML = "記録中..."; 
-                if(navigator.vibrate) navigator.vibrate(50); 
-            } else { 
-                uncomfortableArea.classList.remove('active'); 
-                uncomfortableArea.querySelector('.touch-hint').innerHTML = "不快感を入力"; 
+            if (state) {
+                uncomfortableArea.classList.add('active');
+                uncomfortableArea.querySelector('.touch-hint').innerHTML = "記録中...";
+                if (navigator.vibrate) navigator.vibrate(50);
+            } else {
+                uncomfortableArea.classList.remove('active');
+                uncomfortableArea.querySelector('.touch-hint').innerHTML = "不快感を入力";
             }
         }
-        uncomfortableArea.addEventListener('touchstart', (e)=>{e.preventDefault(); setUncomfortable(true);});
-        uncomfortableArea.addEventListener('touchend', (e)=>{e.preventDefault(); setUncomfortable(false);});
-        uncomfortableArea.addEventListener('mousedown', (e)=>{setUncomfortable(true);});
-        uncomfortableArea.addEventListener('mouseup', (e)=>{setUncomfortable(false);});
+        uncomfortableArea.addEventListener('touchstart', (e) => { e.preventDefault(); setUncomfortable(true); });
+        uncomfortableArea.addEventListener('touchend', (e) => { e.preventDefault(); setUncomfortable(false); });
+        uncomfortableArea.addEventListener('mousedown', (e) => { setUncomfortable(true); });
+        uncomfortableArea.addEventListener('mouseup', (e) => { setUncomfortable(false); });
 
         async function requestPermissions() {
             let granted = true;
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-                try { const p = await DeviceMotionEvent.requestPermission(); if(p !== 'granted') granted = false; } catch(e) { granted = false; }
+                try { const p = await DeviceMotionEvent.requestPermission(); if (p !== 'granted') granted = false; } catch (e) { granted = false; }
             }
             return granted;
         }
 
         async function startCalibration() {
-            if(!await requestPermissions()) { statusMessage.innerText="❌ センサー権限がありません"; return; }
-            isCalibrating = true; 
+            if (!await requestPermissions()) { statusMessage.innerText = "❌ センサー権限がありません"; return; }
+            isCalibrating = true;
             let cX = [], cY = [], cZ = [];
-            statusMessage.innerText = "⏳ 調整中... 端末を動かさないでください"; 
+            statusMessage.innerText = "⏳ 調整中... 端末を動かさないでください";
             calibBtn.disabled = true; startBtn.disabled = true;
-            
-            const tempH = (e) => { 
-                if(isCalibrating) { 
-                    cX.push((e.accelerationIncludingGravity.x||0)/9.8); 
-                    cY.push((e.accelerationIncludingGravity.y||0)/9.8); 
-                    cZ.push((e.accelerationIncludingGravity.z||0)/9.8); 
-                } 
+
+            const tempH = (e) => {
+                if (isCalibrating) {
+                    cX.push((e.accelerationIncludingGravity.x || 0) / 9.8);
+                    cY.push((e.accelerationIncludingGravity.y || 0) / 9.8);
+                    cZ.push((e.accelerationIncludingGravity.z || 0) / 9.8);
+                }
             };
             window.addEventListener('devicemotion', tempH);
-            
+
             setTimeout(() => {
                 isCalibrating = false; window.removeEventListener('devicemotion', tempH);
-                if(cX.length > 0) { 
-                    offsetX = cX.reduce((a,b)=>a+b)/cX.length; 
-                    offsetY = cY.reduce((a,b)=>a+b)/cY.length; 
-                    offsetZ = (cZ.reduce((a,b)=>a+b)/cZ.length) - 1.0; 
-                    statusMessage.innerText="✅ 水平セット完了"; statusMessage.style.color="#4caf50"; 
+                if (cX.length > 0) {
+                    offsetX = cX.reduce((a, b) => a + b) / cX.length;
+                    offsetY = cY.reduce((a, b) => a + b) / cY.length;
+                    offsetZ = (cZ.reduce((a, b) => a + b) / cZ.length) - 1.0;
+                    currentHeading = 0; // Reset heading on calibration
+                    statusMessage.innerText = "✅ 水平・方位セット完了"; statusMessage.style.color = "#4caf50";
                 }
                 calibBtn.disabled = false; startBtn.disabled = false;
             }, 2000);
         }
 
         function handleMotion(e) {
-            rawX = ((e.accelerationIncludingGravity.x||0)/9.8) - offsetX;
-            rawY = ((e.accelerationIncludingGravity.y||0)/9.8) - offsetY;
-            rawZ = ((e.accelerationIncludingGravity.z||0)/9.8) - offsetZ - 1.0;
-            yawRate = (e.rotationRate.alpha||0) * (Math.PI / 180);
-            pitchRate = (e.rotationRate.beta||0) * (Math.PI / 180);
-            rollRate = (e.rotationRate.gamma||0) * (Math.PI / 180);
-            if(!isRecording) {
-                gValueEl.innerText = Math.sqrt(rawX**2 + rawY**2).toFixed(2);
-                yawValueEl.innerText = yawRate.toFixed(2);
+            const now = Date.now();
+            const dt = (now - lastMotionTime) / 1000;
+            lastMotionTime = now;
+
+            rawX = ((e.accelerationIncludingGravity.x || 0) / 9.8) - offsetX;
+            rawY = ((e.accelerationIncludingGravity.y || 0) / 9.8) - offsetY;
+            rawZ = ((e.accelerationIncludingGravity.z || 0) / 9.8) - offsetZ - 1.0;
+            yawRate = (e.rotationRate.alpha || 0) * (Math.PI / 180);
+            pitchRate = (e.rotationRate.beta || 0) * (Math.PI / 180);
+            rollRate = (e.rotationRate.gamma || 0) * (Math.PI / 180);
+
+            // Integrate yaw for heading (relative to calibration)
+            currentHeading += yawRate * dt;
+
+            if (!isRecording) {
+                const compositeG = Math.sqrt(rawX ** 2 + rawY ** 2);
+                gValueEl.innerText = compositeG.toFixed(2);
+                yawValueEl.innerText = (currentHeading * 180 / Math.PI).toFixed(1);
                 zValueEl.innerText = rawZ.toFixed(2);
             }
         }
@@ -320,63 +451,78 @@
             currentGps.lat = position.coords.latitude;
             currentGps.lon = position.coords.longitude;
             currentGps.speed = (position.coords.speed || 0) * 3.6;
-            if(!isRecording) speedValueEl.innerText = currentGps.speed.toFixed(1);
+            if (!isRecording) speedValueEl.innerText = currentGps.speed.toFixed(1);
         }
 
         function recordData() {
-            if(!isRecording) return;
+            if (!isRecording) return;
             const ts = Date.now();
-            gValueEl.innerText = Math.sqrt(rawX**2 + rawY**2).toFixed(2);
-            yawValueEl.innerText = yawRate.toFixed(2);
+            const compositeG = Math.sqrt(rawX ** 2 + rawY ** 2);
+
+            // Calculate Jerk (dt is RECORD_RATE_MS)
+            const dtSec = RECORD_RATE_MS / 1000;
+            jerkX = (rawX - lastX) / dtSec;
+            jerkY = (rawY - lastY) / dtSec;
+            jerkZ = (rawZ - lastZ) / dtSec;
+            const compositeJerk = Math.sqrt(jerkX ** 2 + jerkY ** 2);
+
+            gValueEl.innerText = compositeG.toFixed(2);
+            jerkValueEl.innerText = compositeJerk.toFixed(2);
+            yawValueEl.innerText = (currentHeading * 180 / Math.PI).toFixed(1);
             zValueEl.innerText = rawZ.toFixed(2);
             speedValueEl.innerText = currentGps.speed.toFixed(1);
+
             logData.push({
                 time_ms: ts, uncomfortable: isUncomfortable ? 1 : 0,
                 rawG_X: rawX.toFixed(4), rawG_Y: rawY.toFixed(4), rawG_Z: rawZ.toFixed(4),
-                yaw_rad: yawRate.toFixed(4), pitch_rad: pitchRate.toFixed(4), roll_rad: rollRate.toFixed(4),
+                jerk_X: jerkX.toFixed(4), jerk_Y: jerkY.toFixed(4), jerk_Z: jerkZ.toFixed(4),
+                yaw_rad: currentHeading.toFixed(4), pitch_rad: pitchRate.toFixed(4), roll_rad: rollRate.toFixed(4),
                 lat: currentGps.lat.toFixed(6), lon: currentGps.lon.toFixed(6), speed_kmh: currentGps.speed.toFixed(1)
             });
+
+            lastX = rawX; lastY = rawY; lastZ = rawZ;
             logCountEl.innerText = logData.length;
         }
 
         async function toggleRecording() {
-            if(!isRecording) {
-                if(!await requestPermissions()) return;
-                logData=[]; logCountEl.innerText="0"; 
-                exportBtn.style.display='none'; calibBtn.style.display='none';
+            if (!isRecording) {
+                if (!await requestPermissions()) return;
+                logData = []; logCountEl.innerText = "0";
+                exportBtn.style.display = 'none'; calibBtn.style.display = 'none';
                 window.addEventListener('devicemotion', handleMotion);
                 if (navigator.geolocation) {
                     watchId = navigator.geolocation.watchPosition(handlePosition, null, { enableHighAccuracy: true });
                 }
-                isRecording=true; 
-                startBtn.innerText="記録停止"; startBtn.className="action stop"; 
-                statusMessage.innerText="📡 記録中 (50Hz高速サンプリング)"; statusMessage.style.color="#fff";
+                isRecording = true;
+                startBtn.innerText = "記録停止"; startBtn.className = "action stop";
+                statusMessage.innerText = "📡 記録中 (50Hz高速サンプリング)"; statusMessage.style.color = "#fff";
                 recordInterval = setInterval(recordData, RECORD_RATE_MS);
             } else {
-                isRecording=false; 
-                window.removeEventListener('devicemotion', handleMotion); 
+                isRecording = false;
+                window.removeEventListener('devicemotion', handleMotion);
                 if (watchId !== null) navigator.geolocation.clearWatch(watchId);
                 clearInterval(recordInterval);
-                startBtn.innerText="記録開始"; startBtn.className="action start"; 
-                statusMessage.innerText="🏁 記録完了";
-                exportBtn.style.display='inline-block'; calibBtn.style.display='inline-block';
+                startBtn.innerText = "記録開始"; startBtn.className = "action start";
+                statusMessage.innerText = "🏁 記録完了";
+                exportBtn.style.display = 'inline-block'; calibBtn.style.display = 'inline-block';
             }
         }
 
         function exportCSV() {
-            if(logData.length===0) return;
-            const h = Object.keys(logData[0]).join(','); 
-            const r = logData.map(o=>Object.values(o).join(',')).join('\n');
-            const blob = new Blob([new Uint8Array([0xEF,0xBB,0xBF]), h+'\n'+r], {type:'text/csv;charset=utf-8;'});
+            if (logData.length === 0) return;
+            const h = Object.keys(logData[0]).join(',');
+            const r = logData.map(o => Object.values(o).join(',')).join('\n');
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), h + '\n' + r], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
-            link.download = `ride_quality_log_${new Date().toISOString().replace(/[:.]/g,'-')}.csv`;
+            link.download = `ride_quality_log_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        calibBtn.addEventListener('click', startCalibration); 
-        startBtn.addEventListener('click', toggleRecording); 
+        calibBtn.addEventListener('click', startCalibration);
+        startBtn.addEventListener('click', toggleRecording);
         exportBtn.addEventListener('click', exportCSV);
         window.addEventListener('devicemotion', handleMotion); 
     </script>
 </body>
+
 </html>
