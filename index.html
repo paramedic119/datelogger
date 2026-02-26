@@ -303,6 +303,10 @@
             grid-template-columns: repeat(3, 1fr);
             padding: 10px;
             gap: 8px;
+            position: relative;
+            z-index: 1001;
+            pointer-events: none;
+            /* ダッシュボード越しのタップも不快感入力に反応させる */
         }
 
         body.recording .card {
@@ -329,27 +333,37 @@
 
         body.recording #startBtn {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
-            width: 80px;
-            height: 80px;
-            border-radius: 40px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
             z-index: 2000;
-            font-size: 0.7rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            font-size: 0.75rem;
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
             padding: 0;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         body.recording #uncomfortableArea {
             position: fixed;
-            top: 250px;
-            left: 15px;
-            right: 15px;
-            bottom: 120px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             margin: 0;
-            border-width: 4px;
-            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 0;
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         body.recording #uncomfortableArea .touch-hint {
@@ -359,11 +373,20 @@
         }
 
         body.recording .gbowl-container {
-            position: fixed;
-            top: 10px;
+            position: absolute;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            z-index: 1001;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        body.recording #uncomfortableArea .touch-hint {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
@@ -386,10 +409,6 @@
             <div class="label">Total Samples</div>
             <div id="logCount" class="value">0</div>
         </div>
-    </div>
-
-    <div class="gbowl-container">
-        <canvas id="bowlCanvas" width="200" height="200"></canvas>
     </div>
 
     <div id="statusMessage">車両を水平な場所に停車させ、水平セットを行ってください</div>
@@ -415,6 +434,9 @@
     </div>
 
     <div id="uncomfortableArea">
+        <div class="gbowl-container">
+            <canvas id="bowlCanvas" width="200" height="200"></canvas>
+        </div>
         <div class="touch-hint">不快感を入力</div>
         <div class="touch-sub">不快な揺れを感じている間、<br>ここを押し続けてください</div>
     </div>
