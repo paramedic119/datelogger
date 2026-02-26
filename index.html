@@ -766,14 +766,16 @@
             } else {
                 isRecording = false;
                 document.body.classList.remove('recording');
-                // do NOT remove handleMotion global listener to keep UI alive
                 if (watchId !== null) navigator.geolocation.clearWatch(watchId);
                 clearInterval(recordInterval);
                 clearInterval(autoSendInterval);
                 startBtn.innerText = "記録開始"; startBtn.className = "action start";
-                statusMessage.innerText = "🏁 記録完了";
+                statusMessage.innerText = "🏁 記録停止...";
+
+                // Final flush of remaining data
+                await sendToCloud(true);
+
                 exportBtn.style.display = 'inline-block'; calibBtn.style.display = 'inline-block';
-                cloudBtn.style.display = 'inline-block';
                 releaseWakeLock();
             }
         }
@@ -812,15 +814,22 @@
                 if (!isAuto) {
                     statusMessage.innerText = "✅ クラウド送信完了";
                     statusMessage.style.color = "#4caf50";
+                }
+
+                // Hide retry button if all synced
+                if (lastSentIndex >= logData.length) {
                     cloudBtn.style.display = 'none';
                 }
+
             } catch (e) {
                 console.error("Cloud send error:", e);
-                if (!isAuto) {
-                    statusMessage.innerText = "❌ 送信失敗: " + e.message;
-                    statusMessage.style.color = "#f44336";
-                    cloudBtn.disabled = false;
-                }
+                statusMessage.innerText = "❌ 送信失敗: " + e.message;
+                statusMessage.style.color = "#f44336";
+
+                // Show retry button on error
+                cloudBtn.style.display = 'inline-block';
+                cloudBtn.innerText = "[Retry] 未送信データを送信";
+                cloudBtn.disabled = false;
             } finally {
                 isSending = false;
             }
