@@ -469,6 +469,7 @@
         let wakeLock = null;
         let autoSendInterval = null;
         let lastSentIndex = 0;
+        let isSending = false;
         const RECORD_RATE_MS = 50;
         const AUTO_SEND_MS = 5000;
 
@@ -746,17 +747,23 @@
         }
 
         async function sendToCloud(isAuto = false) {
+            if (isSending) {
+                if (!isAuto) console.log("Still sending, skip manual send");
+                return;
+            }
             const gasUrl = "https://script.google.com/macros/s/AKfycbzdMTc8l3Fet-S1-0YNZALuGPvKUXaupTW1odqJnBNrPl-zsxWX2uFhQ0hdzd0rSZBxYg/exec";
 
-            // Get new data to send
-            const dataToSend = logData.slice(lastSentIndex);
+            // Get new data to send (snapshot current length to avoid skip)
+            const currentTotal = logData.length;
+            const dataToSend = logData.slice(lastSentIndex, currentTotal);
             if (dataToSend.length === 0) return;
 
+            isSending = true;
             if (!isAuto) {
                 statusMessage.innerText = "☁️ クラウドへ送信中...";
                 cloudBtn.disabled = true;
             } else {
-                console.log(`Auto-sending ${dataToSend.length} points...`);
+                console.log(`Auto-sending ${dataToSend.length} points (up to index ${currentTotal})...`);
             }
 
             try {
@@ -764,11 +771,11 @@
                     method: 'POST',
                     mode: 'no-cors',
                     cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain' }, // Use text/plain for no-cors safety
                     body: JSON.stringify(dataToSend)
                 });
 
-                lastSentIndex = logData.length; // Update last sent pointer
+                lastSentIndex = currentTotal; // Update pointer to the snapshot length
 
                 if (!isAuto) {
                     statusMessage.innerText = "✅ クラウド送信完了";
@@ -782,6 +789,8 @@
                     statusMessage.style.color = "#f44336";
                     cloudBtn.disabled = false;
                 }
+            } finally {
+                isSending = false;
             }
         }
 
