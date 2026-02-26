@@ -96,7 +96,7 @@
 
         .controls {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 12px;
             padding: 0 15px 15px 15px;
         }
@@ -133,9 +133,7 @@
         }
 
         #exportBtn {
-            background: linear-gradient(135deg, #059669, #10b981);
-            color: white;
-            display: none;
+            display: none !important;
         }
 
         #statusMessage {
@@ -186,6 +184,19 @@
 
         #uncomfortableArea.active .touch-sub {
             color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* G-Bowl Styles */
+        .gbowl-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        #bowlCanvas {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
         }
 
         /* Modal Styles */
@@ -332,7 +343,7 @@
 
         body.recording #uncomfortableArea {
             position: fixed;
-            top: 100px;
+            top: 250px;
             left: 15px;
             right: 15px;
             bottom: 120px;
@@ -345,6 +356,14 @@
             font-size: 2rem;
             font-weight: 900;
             letter-spacing: 2px;
+        }
+
+        body.recording .gbowl-container {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
         }
     </style>
 </head>
@@ -360,29 +379,17 @@
 
     <div class="dashboard">
         <div class="card">
-            <div class="label">Composite G (XY)</div>
-            <div id="gValue" class="value">0.00</div>
-        </div>
-        <div class="card">
-            <div class="label">Composite Jerk</div>
-            <div id="jerkValue" class="value">0.00</div>
-        </div>
-        <div class="card">
-            <div class="label">Rotation (Yaw)</div>
-            <div id="yawValue" class="value">0.00</div>
-        </div>
-        <div class="card">
             <div class="label">Speed (km/h)</div>
             <div id="speedValue" class="value">0.0</div>
-        </div>
-        <div class="card">
-            <div class="label">Vertical G (Z)</div>
-            <div id="zValue" class="value">0.00</div>
         </div>
         <div class="card">
             <div class="label">Total Samples</div>
             <div id="logCount" class="value">0</div>
         </div>
+    </div>
+
+    <div class="gbowl-container">
+        <canvas id="bowlCanvas" width="200" height="200"></canvas>
     </div>
 
     <div id="statusMessage">車両を水平な場所に停車させ、水平セットを行ってください</div>
@@ -400,9 +407,9 @@
 
     <div class="controls">
         <button id="calibBtn" class="action calib"><img src="icon_sensor_calibrate_1772053987713.png" class="img-icon"
-                onerror="this.style.display='none'"> [Calibrate] 水平セット</button>
+                onerror="this.style.display='none'"> [Calibrate] 水平・方位セット</button>
         <button id="startBtn" class="action start">記録開始</button>
-        <button id="exportBtn" class="action export">CSV出力</button>
+        <button id="exportBtn" class="action export" style="display:none;">CSV出力</button>
         <button id="cloudBtn" class="action cloud"
             style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; display: none;">クラウド送信</button>
     </div>
@@ -453,6 +460,8 @@
         let currentHeading = 0;
         let currentGps = { lat: 0, lon: 0, speed: 0 };
         let offsetX = 0, offsetY = 0, offsetZ = 0, offsetYaw = 0;
+        let smoothX = 0, smoothY = 0;
+        const LPF_ALPHA = 0.2; // Display smoothing
         let isCalibrating = false;
         let recordInterval = null;
         let watchId = null;
@@ -470,13 +479,15 @@
         const driverExpInput = document.getElementById('driverExp');
         const driverAgeInput = document.getElementById('driverAge');
 
-        const gValueEl = document.getElementById('gValue');
-        const yawValueEl = document.getElementById('yawValue');
-        const jerkValueEl = document.getElementById('jerkValue');
-        const zValueEl = document.getElementById('zValue');
+        const gValueEl = null; // Removed
+        const yawValueEl = null; // Removed
+        const jerkValueEl = null; // Removed
+        const zValueEl = null; // Removed
         const speedValueEl = document.getElementById('speedValue');
         const logCountEl = document.getElementById('logCount');
         const statusMessage = document.getElementById('statusMessage');
+        const bowlCanvas = document.getElementById('bowlCanvas');
+        const bowlCtx = bowlCanvas.getContext('2d');
 
         // Load profile from localStorage
         window.addEventListener('load', () => {
@@ -541,6 +552,7 @@
                     offsetY = cY.reduce((a, b) => a + b) / cY.length;
                     offsetZ = (cZ.reduce((a, b) => a + b) / cZ.length) - 1.0;
                     currentHeading = 0; // Reset heading on calibration
+                    smoothX = 0; smoothY = 0; // Reset display smoothing
                     statusMessage.innerText = "✅ 水平・方位セット完了"; statusMessage.style.color = "#4caf50";
                 }
                 calibBtn.disabled = false; startBtn.disabled = false;
@@ -560,16 +572,63 @@
             pitchRate = (e.rotationRate.beta || 0) * (Math.PI / 180);
             rollRate = (e.rotationRate.gamma || 0) * (Math.PI / 180);
 
-            // Integrate yaw for heading (relative to calibration or record start)
-            currentHeading += yawRate * dt;
+            // Update Smooth Values for Display (LPF)
+            smoothX = LPF_ALPHA * rawX + (1 - LPF_ALPHA) * smoothX;
+            smoothY = LPF_ALPHA * rawY + (1 - LPF_ALPHA) * smoothY;
 
             // Update UI
-            const compositeG = Math.sqrt(rawX ** 2 + rawY ** 2);
-            gValueEl.innerText = compositeG.toFixed(2);
-            yawValueEl.innerText = (currentHeading * 180 / Math.PI).toFixed(1);
-            zValueEl.innerText = rawZ.toFixed(2);
-
+            drawBowl(smoothX, smoothY);
             // Speed update from GPS is handled in handlePosition
+        }
+
+        function drawBowl(x, y) {
+            const size = 200;
+            const center = size / 2;
+            const maxG = 0.4;
+            const scale = (size / 2) / maxG;
+
+            bowlCtx.clearRect(0, 0, size, size);
+
+            // Draw grid circles
+            bowlCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            bowlCtx.lineWidth = 1;
+            for (let g = 0.1; g <= 0.4; g += 0.1) {
+                bowlCtx.beginPath();
+                bowlCtx.arc(center, center, g * scale, 0, Math.PI * 2);
+                bowlCtx.stroke();
+            }
+
+            // Draw axis
+            bowlCtx.beginPath();
+            bowlCtx.moveTo(0, center); bowlCtx.lineTo(size, center);
+            bowlCtx.moveTo(center, 0); bowlCtx.lineTo(center, size);
+            bowlCtx.stroke();
+
+            // Draw current G point
+            const dotX = center + (x * scale);
+            const dotY = center - (y * scale); // Invert Y for screen coordinates
+
+            // Outer glow
+            const grad = bowlCtx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 15);
+            grad.addColorStop(0, 'rgba(79, 195, 247, 0.8)');
+            grad.addColorStop(1, 'rgba(79, 195, 247, 0)');
+            bowlCtx.fillStyle = grad;
+            bowlCtx.beginPath();
+            bowlCtx.arc(dotX, dotY, 15, 0, Math.PI * 2);
+            bowlCtx.fill();
+
+            // Core dot
+            bowlCtx.fillStyle = '#fff';
+            bowlCtx.beginPath();
+            bowlCtx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+            bowlCtx.fill();
+
+            // Label
+            bowlCtx.fillStyle = '#4fc3f7';
+            bowlCtx.font = '10px Outfit';
+            bowlCtx.textAlign = 'center';
+            const totalG = Math.sqrt(x * x + y * y);
+            bowlCtx.fillText(totalG.toFixed(2) + " G", center, size - 10);
         }
 
         function handlePosition(position) {
@@ -591,10 +650,11 @@
             jerkZ = (rawZ - lastZ) / dtSec;
             const compositeJerk = Math.sqrt(jerkX ** 2 + jerkY ** 2);
 
-            gValueEl.innerText = compositeG.toFixed(2);
-            jerkValueEl.innerText = compositeJerk.toFixed(2);
-            yawValueEl.innerText = (currentHeading * 180 / Math.PI).toFixed(1);
-            zValueEl.innerText = rawZ.toFixed(2);
+            // Update Smooth Values for Display (LPF)
+            smoothX = LPF_ALPHA * rawX + (1 - LPF_ALPHA) * smoothX;
+            smoothY = LPF_ALPHA * rawY + (1 - LPF_ALPHA) * smoothY;
+
+            drawBowl(smoothX, smoothY);
             speedValueEl.innerText = currentGps.speed.toFixed(1);
 
             logData.push({
